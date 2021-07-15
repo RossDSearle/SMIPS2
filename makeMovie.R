@@ -7,24 +7,28 @@ library(xts)
 library(lubridate)
 
 
-dataRoot <- 'C:/Projects/EP/RegionalMoistureMaps'
-
 outDir <- 'e:/temp/movie'
 SMIn <- paste0('O:/processed/delivery/SMIPS')
-AwraIn <- paste0('C:/Projects/SMIPS/SMEstimates/BOM/AWRANetCDFs/geotifsNew/sm_pct')
-fls <- list.files(SMIn, full.names = T, recursive = T, pattern = '.tif')
 
 dts <- seq.Date(as.Date('2016-01-01'), as.Date('2020-12-31') , 1)
 colfunc <- colorRampPalette(c("brown", 'lightyellow', "darkblue"))
 
-for (i in 1:length(dts)) {
 
-  print(paste0(i, ' of ', length(dts)))
-  png(filename = paste0(outDir, '/image-', i, '.png'), width = 1000, height = 1000)
+### Produce images  for all versions
+
+for (i in 1:length(dts)) {
   
-  split.screen(matrix(c(0,1,  0,0.1,  0,1,  0.1,0.55,  0,1,  0.55,1), ncol=4, byrow = T)) # Makes Screen 1 and 2
-  split.screen(c(1,2), screen=2) # Makes Screen 3 and 4
-  split.screen(c(1,2), screen=3) # Makes Screen 3 and 4
+  print(paste0(i, ' of ', length(dts)))
+  
+  #### Start png file creation
+  png(filename = paste0(outDir, '/image-', i, '.png'), width = 1250, height = 1000)
+  
+  #### Split up the graphics window into the various pllotting areas
+  split.screen(matrix(c(0,1,  0,0.1,  0,1,  0.1,0.4,  0,1,  0.4,0.7,  0,1,  0.7,1), ncol=4, byrow = T)) # Makes Screen 1 and 2
+  split.screen(c(1,4), screen=2) 
+  split.screen(c(1,4), screen=3) 
+  split.screen(c(1,4), screen=4) 
+  split.screen(matrix(c(0,0.7,  0,1,  0.7,1,  0,1), ncol=4, byrow = T), screen=1) 
   
   dt <- dts[i]  
   year(dt)
@@ -33,23 +37,46 @@ for (i in 1:length(dts)) {
   mn <- bits[[1]][2]
   dy <- bits[[1]][3]
   
+  ##### Read in the SM rasters for the day
+  r0 <- raster(paste0(SMIn,'/v1.0.0/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
   r1 <- raster(paste0(SMIn,'/v1.0.1/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
-  r2 <- raster(paste0(SMIn,'/v1.0.3/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
-  r3 <- raster(paste0(SMIn,'/v1.0.5/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
-  r4 <- raster(paste0(SMIn,'/v1.0.8/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
- 
-  screen(4); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r1, col=colfunc(20),zlim=c(0,150),useRaster=T, main='ML-rain AWRA-Etp SMOS-smoothed',  axes=FALSE, xlab='', ylab='')
-  screen(5); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r2, col=colfunc(20),zlim=c(0,150),useRaster=T, main='SILO-Rain AWRA-Etp SMOS-normal', legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
-  screen(6); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r3, col=colfunc(20),zlim=c(0,150),useRaster=T, main='ML-rain SILO-FAO56 SMOS-smoothed', legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
-  screen(7); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r4, col=colfunc(20),zlim=c(0,150),useRaster=T, main='AWRA-rain SILO-FAO56 SMOS-smoothed', legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
- 
+  r2 <- raster(paste0(SMIn,'/v1.0.2/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  r3 <- raster(paste0(SMIn,'/v1.0.3/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  r4 <- raster(paste0(SMIn,'/v1.0.4/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  
+  r5 <- raster(paste0(SMIn,'/v1.0.5/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  r6 <- raster(paste0(SMIn,'/v1.0.6/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  r7 <- raster(paste0(SMIn,'/v1.0.7/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  r8 <- raster(paste0(SMIn,'/v1.0.8/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  
+  r9 <- raster(paste0(SMIn,'/v1.0.9/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  r10 <- raster(paste0(SMIn,'/v1.1.0/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  r11 <- raster(paste0(SMIn,'/v1.1.1/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  
+  ##### Plot the rasters
+  screen(5); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r0, col=colfunc(20),zlim=c(0,120),useRaster=T, main='ML-rainAWRA-Etp SMOS-normal', cex.main=1,  axes=FALSE, xlab='', ylab='')
+  screen(6); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r1, col=colfunc(20),zlim=c(0,120),useRaster=T, main='ML-rain AWRA-Etp SMOS-smoothed', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  screen(7); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r2, col=colfunc(20),zlim=c(0,120),useRaster=T, main='AWRA-rain AWRA-Etp SMOS-normal', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  screen(8); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r3, col=colfunc(20),zlim=c(0,120),useRaster=T, main='SILO-Rain AWRA-Etp SMOS-normal', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  
+  screen(9); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r4, col=colfunc(20),zlim=c(0,120),useRaster=T, main='ML-rain SILO-FAO56 SMOS-normal', cex.main=1,  axes=FALSE, xlab='', ylab='')
+  screen(10); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r5, col=colfunc(20),zlim=c(0,120),useRaster=T, main='ML-rain SILO-FAO56 SMOS-smoothed', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  screen(11); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r6, col=colfunc(20),zlim=c(0,120),useRaster=T, main='AWRA-rain SILO-FAO56 SMOS-normal', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  screen(12); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r7, col=colfunc(20),zlim=c(0,120),useRaster=T, main='AWRA-rain AWRA-Etp SMOS-smoothed', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  
+  screen(13); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r8, col=colfunc(20),zlim=c(0,120),useRaster=T, main='AWRA-rain SILO-FAO56 SMOS-smoothed', cex.main=1,  axes=FALSE, xlab='', ylab='')
+  screen(14); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r9, col=colfunc(20),zlim=c(0,120),useRaster=T, main='SILO-Rain SILO-FAO56 SMOS-normal', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  screen(15); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r10, col=colfunc(20),zlim=c(0,120),useRaster=T, main='SILO-Rain AWRA-Etp SMOS-smoothed', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  screen(16); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r11, col=colfunc(20),zlim=c(0,120),useRaster=T, main='SILO-Rain SILO-FAO56 SMOS-smoothed', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  
   # par(mfrow=c(2,2))
   # image(r1, col=colfunc(20),zlim=c(0,150),useRaster=T, main='ML-rain AWRA-Etp SMOS-smoothed', legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
   
-  screen(1);par(mar = c(0, 0, 0, 0))
+  #####  Plot the timeline
+  screen(17);par(mar = c(0, 0, 0, 0))
   
   x <- c(1, length(dts))
-  y <- c(1.5, 1.5)
+  y1 <- c(1.5, 1.5)
   plot.new(); plot.window(xlim=c(1, length(dts)),ylim=c(1,2) )
   lines (x, y1, col='gray', lwd=5)
   points(i, 1.5, pch=19, cex=2.2, col='blue')
@@ -60,17 +87,30 @@ for (i in 1:length(dts)) {
   text(1460, 1.2, '2020', cex = 1, font=2) 
   text(1825, 1.2, '2021', cex = 1, font=2)
   
+  ####  Plot Legend
+  screen(n = 18, new = T)
+  par(mar = c(0.1, 0.1, 0.1, 0.1)) 
+ # legend_image <- as.raster(matrix(rev(colfunc(20)), ncol=20))
+  legend_image <- as.raster(matrix(colfunc(20), ncol=20))
+  plot(c(0,4),c(0,2),type = 'n', axes = F,xlab = '', ylab = '')
+  #text(x=1, y = seq(0,7,l=6), labels = seq(round(lowerBound),round(upperBound),l=6))
+  #text(x=0.8, y = seq(0,6,l=5), labels = paste0(seq(round(0),round(120),l=5), ' mm'), cex=0.7, font=4)
+  rasterImage(legend_image, xleft=0.1, ybottom=0.5, xright=4,ytop=1, main='Regionalised SM Map')
+  text(x=2, y = 1.9,  'Soil Water (mm)', font=4)
+  text(x=0.2, y = 1.4,  '0', font=4, cex=0.9)
+  text(x=2, y = 1.4,  '60', font=4, cex=0.9)
+  text(x=3.8, y = 1.4,  '120', font=4, cex=0.9)
+  
   dev.off()
   close.screen(all = TRUE)    
   
 }
 
 
+#### Run ffmpeg to generte the movie
 
-args <- paste0(' -r 10  -i ',  'e:/temp/movie/image-%d.png -q:v 10 -y ',  'e:/temp/smips.avi')
+args <- paste0(' -r 10  -i ',  'e:/temp/movie/image-%d.png -q:v 10 -y ',  'e:/temp/smipsAll.avi')
 #r above = frame rate
 system2("C:/LocalProgs/FFmpeg/bin/ffmpeg.exe", args, stdout = T, stderr = T)
 
-
-system2('e:/temp/smips.avi')
-
+#system('C:/LocalProgs/VideoLAN/VLC/vlc file:///e:/temp/smipsAll.avi', wait=F)

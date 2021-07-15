@@ -21,7 +21,9 @@ smipsRootDir <- '//fs1-cbr.nexus.csiro.au/{lw-sm-forecast}/work/processed/delive
 versions <- c('v1.0.0','v1.0.1','v1.0.2','v1.0.3','v1.0.4','v1.0.5','v1.0.6','v1.0.7','v1.0.8','v1.0.9','v1.1.0','v1.1.1')
 products <- c('totalbucket', 'bucket1', 'bucket2', 'deepD', 'runoff')
 
-versions <- c('v1.0.1','v1.0.3','v1.0.5','v1.0.6','v1.0.7','v1.0.8','v1.0.9','v1.1.0','v1.1.1')
+#versions <- c('v1.0.1','v1.0.3','v1.0.5','v1.0.6','v1.0.7','v1.0.8','v1.0.9','v1.1.0','v1.1.1')
+
+versions <- c('v1.0.2','v1.0.4' )
 products <- c('totalbucket', 'bucket1', 'bucket2')
 
 
