@@ -6,6 +6,7 @@ library(httr)
 library(sf)
 library(ggplot2)
 library(httr)
+library(utils)
 
 #source('C:/Users/sea084/OneDrive - CSIRO/RossRCode/Git/SensorFederator/Harvesting/TSUtils.R')
 
@@ -74,7 +75,7 @@ att <- 'Soil-Moisture'
 #att <- 'Rainfall'
 locs$SiteID
 ### download from API
-for (i in 1:nrow(locs)) {
+for (i in 223:nrow(locs)) {
   sid<-locs[i,]$SiteID
   print(paste0(i, ' of ', nrow(locs), ' - ', sid))
   
@@ -89,10 +90,10 @@ for (i in 1:nrow(locs)) {
       url <- paste0("http://esoil.io/SensorFederationWebAPI/SensorAPI/getSensorDataStreams?siteid=", sid ,"&sensortype=", att, "&startdate=", s, "T00:00:00&enddate=", e, "T00:00:00&aggperiod=days&usr=ross.searle@csiro.au&pwd=S4QQBMk74zhnBnEpTcd6iLwlUredn6kekLkjFL")
       
       print(url)
-      resp <- GET(url,  timeout(1800))
+      resp <- GET(URLencode(url),  timeout(1800))
       if(resp$status_code == 200){
         df <- fromJSON(content(resp, 'text'))
-        saveRDS(df, paste0(rootDir, '/', sid, '!', s, '!', att, '.rds'))
+        saveRDS(df, paste0(rootDir, '/', sid, '$', s, '$', att, '.rds'))
       }
     }
   }
@@ -188,11 +189,12 @@ for (i in 1:length(fls)) {
         resp$UpperDepth[k] <- resp$UpperDepth[k] * -10
       }
       
-      odf <- data.frame(sid=sid, dataType=dt, depth=resp$UpperDepth[k], date=dys, value=resp$DataStream[[k]]$v)
+      odf <- data.frame(sid=sid, dataType=att, depth=resp$UpperDepth[k], date=dys, value=resp$DataStream[[k]]$v)
       odf <- odf[idxs,]
       idxs2 <- which(odf$value >= 0 & odf$value <= 100)
-      odf <- odf[idxs2,]
-      dbAppendTable(conn = con, name = 'ProbeData', value = odf)
+      odf <- odf[idxs2,] 
+      try(dbAppendTable(conn = con, name = 'ProbeData', value = odf),silent=F)
+      
     }
   }
 }
