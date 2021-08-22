@@ -10,8 +10,13 @@ library(lubridate)
 outDir <- 'e:/temp/movie'
 SMIn <- paste0('O:/processed/delivery/SMIPS')
 
-dts <- seq.Date(as.Date('2016-01-01'), as.Date('2020-12-31') , 1)
+dts <- seq.Date(as.Date('2017-01-01'), as.Date('2021-06-30') , 1)
 colfunc <- colorRampPalette(c("brown", 'lightyellow', "darkblue"))
+colfunc2 <- colorRampPalette(c("red","green"))
+
+# brk <- brick("E:/Projects/SMIPS/AWRA_ss_pct.nc")
+# totAWC <- raster('Y:/Ross/TERN/AWC/SMIPS/SMIPS_Mean_AWC_Total_Resample.tif')
+
 
 
 ### Produce images  for all versions
@@ -38,26 +43,40 @@ for (i in 1:length(dts)) {
   dy <- bits[[1]][3]
   
   ##### Read in the SM rasters for the day
-  r0 <- raster(paste0(SMIn,'/v1.0.0/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
-  r1 <- raster(paste0(SMIn,'/v1.0.1/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
-  r2 <- raster(paste0(SMIn,'/v1.0.2/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
-  r3 <- raster(paste0(SMIn,'/v1.0.3/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
-  r4 <- raster(paste0(SMIn,'/v1.0.4/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
   
+  # nid <- match(paste0('X', yr, '.',mn, '.', dy), names(brk))
+  # ra<-brk[[nid]]
+  
+
+  awraR <- raster(paste0('e:/temp/AWRAComparisons/awra/awra_',yr, mn, dy, '.tif'))
+  smipsIndexR  <- raster(paste0('e:/temp/AWRAComparisons/smipsindex/smips_totalbucketIndex_',yr, mn, dy, '.tif'))
+  diffR <- raster(paste0('e:/temp/AWRAComparisons/compare/awraSmips_',yr, mn, dy, '.tif'))
+  diffR <- clamp(diffR, lower=-1, upper=1)
+  smipsIndexR <- clamp(smipsIndexR, lower=0, upper=1)
+  
+ # r0 <- raster(paste0(SMIn,'/v1.0.0/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  # r1 <- raster(paste0(SMIn,'/v1.0.1/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  # r2 <- raster(paste0(SMIn,'/v1.0.2/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  # r3 <- raster(paste0(SMIn,'/v1.0.3/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+   r4 <- raster(paste0(SMIn,'/v1.0.4/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  # 
   r5 <- raster(paste0(SMIn,'/v1.0.5/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
   r6 <- raster(paste0(SMIn,'/v1.0.6/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
   r7 <- raster(paste0(SMIn,'/v1.0.7/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
   r8 <- raster(paste0(SMIn,'/v1.0.8/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
   
   r9 <- raster(paste0(SMIn,'/v1.0.9/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
-  r10 <- raster(paste0(SMIn,'/v1.1.0/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
-  r11 <- raster(paste0(SMIn,'/v1.1.1/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+ # r10 <- raster(paste0(SMIn,'/v1.1.0/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+ # r11 <- raster(paste0(SMIn,'/v1.1.1/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  r12 <- raster(paste0(SMIn,'/v1.1.2/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  r13 <- raster(paste0(SMIn,'/v1.1.3/totalbucket/', yr, '/smips_totalbucket_mm_',yr, mn, dy, '.tif') )
+  
   
   ##### Plot the rasters
-  screen(5); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r0, col=colfunc(20),zlim=c(0,120),useRaster=T, main='ML-rainAWRA-Etp SMOS-normal', cex.main=1,  axes=FALSE, xlab='', ylab='')
-  screen(6); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r1, col=colfunc(20),zlim=c(0,120),useRaster=T, main='ML-rain AWRA-Etp SMOS-smoothed', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
-  screen(7); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r2, col=colfunc(20),zlim=c(0,120),useRaster=T, main='AWRA-rain AWRA-Etp SMOS-normal', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
-  screen(8); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r3, col=colfunc(20),zlim=c(0,120),useRaster=T, main='SILO-Rain AWRA-Etp SMOS-normal', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  screen(5); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(awraR, col=colfunc(20),zlim=c(0,1),useRaster=T, main='AWRA', cex.main=1,  axes=FALSE, xlab='', ylab='')
+  screen(6); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(smipsIndexR, col=colfunc(20),zlim=c(0,1),useRaster=T, main='SMIPS Index', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  screen(7); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(diffR, col=colfunc2(20),zlim=c(-1,1),useRaster=T, main='AWRA minus SMIPS', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  #screen(8); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r3, col=colfunc(20),zlim=c(0,120),useRaster=T, main='SILO-Rain AWRA-Etp SMOS-normal', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
   
   screen(9); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r4, col=colfunc(20),zlim=c(0,120),useRaster=T, main='ML-rain SILO-FAO56 SMOS-normal', cex.main=1,  axes=FALSE, xlab='', ylab='')
   screen(10); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r5, col=colfunc(20),zlim=c(0,120),useRaster=T, main='ML-rain SILO-FAO56 SMOS-smoothed', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
@@ -66,8 +85,8 @@ for (i in 1:length(dts)) {
   
   screen(13); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r8, col=colfunc(20),zlim=c(0,120),useRaster=T, main='AWRA-rain SILO-FAO56 SMOS-smoothed', cex.main=1,  axes=FALSE, xlab='', ylab='')
   screen(14); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r9, col=colfunc(20),zlim=c(0,120),useRaster=T, main='SILO-Rain SILO-FAO56 SMOS-normal', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
-  screen(15); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r10, col=colfunc(20),zlim=c(0,120),useRaster=T, main='SILO-Rain AWRA-Etp SMOS-smoothed', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
-  screen(16); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r11, col=colfunc(20),zlim=c(0,120),useRaster=T, main='SILO-Rain SILO-FAO56 SMOS-smoothed', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  screen(15); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r12, col=colfunc(20),zlim=c(0,120),useRaster=T, main='MLPrecip_AWRA-ETp_SMOS-smoothed', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
+  screen(16); par(mar = c(0.2, 0.2, 0.9, 0.2)); image(r13, col=colfunc(20),zlim=c(0,120),useRaster=T, main='AWRA-rain_AWRA-ETp_SMOS-smoothed', cex.main=1, legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
   
   # par(mfrow=c(2,2))
   # image(r1, col=colfunc(20),zlim=c(0,150),useRaster=T, main='ML-rain AWRA-Etp SMOS-smoothed', legend=FALSE, axes=FALSE, box=FALSE, xlab='', ylab='')
@@ -101,8 +120,21 @@ for (i in 1:length(dts)) {
   text(x=2, y = 1.4,  '60', font=4, cex=0.9)
   text(x=3.8, y = 1.4,  '120', font=4, cex=0.9)
   
+  
+  ####  Plot Difference Legend
+  screen(n = 8, new = T)
+  par(mar = c(0.1, 0.1, 0.1, 0.1)) 
+  # legend_image <- as.raster(matrix(rev(colfunc(20)), ncol=20))
+  legend_image <- as.raster(matrix(colfunc2(20), ncol=20))
+  plot(c(0,4),c(0,2),type = 'n', axes = F,xlab = '', ylab = '')
+  rasterImage(legend_image, xleft=0.1, ybottom=0.8, xright=4,ytop=1, main='Regionalised SM Map')
+  text(x=2, y = 1.2,  'AWRA minus SMIPS', font=4)
+  text(x=0.5, y = 1.1,  'SMIPS Higher', font=4, cex=0.9)
+  text(x=3.5, y = 1.1,  'AWRA Higher', font=4, cex=0.9)
+ 
+  
   dev.off()
-  close.screen(all = TRUE)    
+  close.screen(all = TRUE)  
   
 }
 
