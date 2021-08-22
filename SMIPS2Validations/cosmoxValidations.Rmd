@@ -1,0 +1,82 @@
+---
+title: "Cosmoz Validations"
+author: "Ross Searle"
+date: "19/08/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(stringr)
+library(xts)
+library(dygraphs)
+library(hexbin)
+library(RColorBrewer)
+library(httr)
+library(leaflet)
+
+source('C:/Users/sea084/OneDrive - CSIRO/RossRCode/Git/SMIPS2/SMIPS2Validations/Utils.R')
+
+
+```
+
+
+```{r Raw, echo=FALSE, include=FALSE}
+
+
+mVersions <- c('v1.0.0','v1.0.1','v1.0.2','v1.0.3','v1.0.4','v1.0.5','v1.0.6','v1.0.7','v1.0.8','v1.0.8','v1.1.0','v1.1.1','v1.1.2','v1.1.3')
+HQprobes <- read.csv('C:/Projects/SMIPS/HQProbeDumps/allHighQualityProbeSites.csv', stringsAsFactors = F)
+l=nrow(HQprobes)
+DrillDBfile <-  paste0('C:/Projects/SMIPS/SMIPS2_Validations/SMIPS_Drills/smips_Drills.db')
+
+cStations <- fromJSON('https://landscapes-cosmoz-api.tern.org.au/rest/stations')
+str(cStations)
+csids <- cStations$stations[,c(1,2,30)]
+
+
+
+
+rps <- list()
+
+for (i in 6:6) {
+
+  
+  sname <- csids$site_name[i]
+sid <- paste0('Cosmoz_', csids$site_no[i])
+#i=2
+startDate='2017-01-01'
+endDate='2021-07-14'
+
+
+
+url <- paste0('https://landscapes-cosmoz-api.tern.org.au/rest/stations/', i, '/observations?startdate=', startDate, 'T23:59:59.000Z&enddate=', endDate, 'T23:59:59.000Z&count=0')
+df <- fromJSON(url)
+
+#if(length(df$observations)>0){
+rawCosTS <- apply.daily(xts(x=df$observations$soil_moist_filtered, order.by=as.Date(df$observations$time)),FUN=mean)
+rawCRainTS <- apply.daily(xts(x=df$observations$rainfall, order.by=as.Date(df$observations$time)),FUN=sum)
+crTS <- merge.xts(rawCosTS,rawCRainTS)
+
+
+d <- dygraph(crTS, main=paste0('Raw Cosmoz and Rainfall for site ', ' - ', sname)) %>% dyRangeSelector()
+#showSiteMap(sid, zoom=5)
+  show(d[i])
+rps <- c(rps, d)
+
+}
+
+
+```
+
+```{r Raw2, echo=FALSE}
+
+for (i in 1:length(rps)) {
+  
+
+  
+}
+
+```
